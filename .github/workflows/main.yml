@@ -1,4 +1,4 @@
-name: Windows - Lilemanager
+name: Windows - Litemanager
 on:
   workflow_dispatch:
 
@@ -10,7 +10,7 @@ jobs:
     steps:
       - name: Downlading & installing Essentials
         run: |
-          Invoke-WebRequest -Uri "https://gitlab.com/chamod12/lm_win-10_gthub_rdp/-/raw/main/Downloads.bat" -OutFile "Downloads.bat"
+          Invoke-WebRequest -Uri "https://gitlab.com/chamod12/lm_win-10_github_rdp/-/raw/main/Downloads.bat" -OutFile "Downloads.bat"
           cmd /c Downloads.bat
 
       - name: Connect to LiteManager
