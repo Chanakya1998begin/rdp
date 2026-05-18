@@ -52,6 +52,20 @@ For Anthropic (Claude) instead of Ollama:
 1. Sidebar (lock icon) → Add new secret: `ANTHROPIC_API_KEY` = `sk-ant-...`
 2. Change `BACKEND = "anthropic"` and `MODEL = "claude-sonnet-4-5"`
 
+#### Model-quality table — pick based on how reliable you need the verdict
+
+| Model | Cost | Follows 3-line contract? | Use for |
+|---|---|---|---|
+| `llama3.2:3b` (Ollama, default) | free | ❌ often emits markdown analysis instead of the 3-line shape — falls back to salvage parser | quick smoke-test that the pipeline runs end-to-end |
+| `qwen2.5:7b` (Ollama) | free | ✓ much better instruction-following | recommended for free local runs |
+| `claude-sonnet-4-5` (Anthropic) | paid | ✓ same model the production agent uses | recommended for actual research-grade verdicts |
+
+The notebook degrades gracefully when the LLM breaks the contract:
+
+* **Strict parse fails** → a **salvage parser** scans the response for directional keywords (BUY/SELL/REAL V/TRAP/MIXED/bullish/bearish), the first numeric in [-1, +1], and the "Recommendation:" paragraph — synthesises a usable verdict.
+* **Salvage also fails** → the renderer prints `❓[UNPARSED]` with the raw response excerpt so you see what the LLM actually said.
+* Stage 7 of the trace flags `⚠️ SALVAGE PARSE` when the fallback fires.
+
 [Open in Colab](https://colab.research.google.com/github/Chanakya1998begin/rdp/blob/main/Counter_Fibo_Advisory.ipynb)
 
 ### `Test_ollama.ipynb` (legacy)
