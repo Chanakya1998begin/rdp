@@ -66,6 +66,21 @@ The notebook degrades gracefully when the LLM breaks the contract:
 * **Salvage also fails** → the renderer prints `❓[UNPARSED]` with the raw response excerpt so you see what the LLM actually said.
 * Stage 7 of the trace flags `⚠️ SALVAGE PARSE` when the fallback fires.
 
+#### LLM availability preflight + error reporting
+
+Before the per-event loop, the notebook calls `check_llm_availability(BACKEND, MODEL)` which verifies the backend is reachable AND the model is loaded. If anything is wrong, the run **aborts with a single clear error message + remediation steps** — instead of producing N identical generic failures.
+
+Failure modes covered (each emits a specific fix-it message):
+
+| Scenario | What the error says |
+|---|---|
+| Ollama server not running | "Ollama server is not reachable. Fix: re-run cell 1.2 to launch the server." |
+| Ollama up, model not pulled | "Model 'X' not loaded. Available: [...]. Fix: run cell 1.3, OR change MODEL." |
+| Ollama up but ping fails (OOM) | "Test call failed — model corrupted or runtime OOM. Fix: try a smaller model or restart the runtime." |
+| Anthropic, no API key | "ANTHROPIC_API_KEY not set in Colab Secrets. Fix: sidebar (lock icon) → Add secret → ..." |
+| Anthropic, SDK not installed | "anthropic SDK not installed. Fix: `!pip install anthropic`" |
+| Mid-run LLM crash | Wrapped in `LLMUnavailableError` with context; aborts the batch so you fix once, not N times |
+
 [Open in Colab](https://colab.research.google.com/github/Chanakya1998begin/rdp/blob/main/Counter_Fibo_Advisory.ipynb)
 
 ### `Test_ollama.ipynb` (legacy)
